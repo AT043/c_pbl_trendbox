@@ -1,5 +1,5 @@
-ml_results_days.txt
+# ignore all .a files
+*.txt
 
-tb_db_structures.txt
-
-backupresetdbimg.txt
+# but do track lib.a, even though you're ignoring .a files above
+!requirements.txt
