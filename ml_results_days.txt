@@ -1,0 +1,18 @@
+#!/bin/bash
+
+# Eksekusi query rekapitulasi
+psql -U admine_tb -d tb_db -c "
+INSERT INTO ml_results_days (date, month, year, people_count, dominant_emotion)
+SELECT 
+    EXTRACT(DAY FROM MAX(created_at)) AS date,
+    EXTRACT(MONTH FROM MAX(created_at)) AS month,
+    EXTRACT(YEAR FROM MAX(created_at)) AS year,
+    SUM(people_count) AS people_count,
+    (SELECT dominant_emotion 
+     FROM ml_results 
+     GROUP BY dominant_emotion 
+     ORDER BY COUNT(*) DESC 
+     LIMIT 1) AS dominant_emotion
+FROM ml_results;"
+
+echo "Rekapitulasi harian selesai."

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trendbox Cam - Testing</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body { text-align: center; font-family: Arial, sans-serif; }
+        #notification { display: none; padding: 10px; background: green; color: white; margin: 10px auto; width: 300px; }
+        button { padding: 10px; margin: 5px; }
+    </style>
+</head>
+<body>
+    <h1>Live Camera Feed - Testing</h1>
+    <div id="notification">📸 Gambar telah tersimpan!</div>
+    <img src="{{ url_for('video_feed') }}" width="60%">
+    
+    <button id="startCapture">Start Capture</button>
+    <button id="stopCapture">Stop Capture</button>
+
+    <script>
+        let lastFilename = "";
+
+        function checkForNewImage() {
+            $.get("/check_new_capture", function(data) {
+                if (data.filename && data.filename !== lastFilename) {
+                    lastFilename = data.filename;
+                    $("#notification").fadeIn().delay(2000).fadeOut();
+                }
+            });
+        }
+
+        setInterval(checkForNewImage, 3000);  // Cek setiap 3 detik
+
+        $("#startCapture").click(() => {
+            $.post("/start_capture", () => alert("Capture dimulai"));
+        });
+
+        $("#stopCapture").click(() => {
+            $.post("/stop_capture", () => alert("Capture dihentikan"));
+        });
+    </script>
+</body>
+</html>

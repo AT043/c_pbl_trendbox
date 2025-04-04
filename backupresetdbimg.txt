@@ -1,0 +1,43 @@
+#!/bin/bash
+
+# Direktori penyimpanan gambar
+IMAGE_DIR="/home/at79o/trendbox/captured_images"
+BACKUP_DIR_IMG="/home/at79o/trendbox/backup/img"
+BACKUP_DIR_DB="/home/at79o/trendbox/backup/db"
+DB_NAME="tb_db"
+DB_USER="admine_tb"
+
+# Buat timestamp
+DATE=$(date +"%Y%m%d")
+
+# 1. Kompres semua gambar dalam folder captured_images
+ZIP_FILE="$BACKUP_DIR_IMG/captured_images_$DATE.zip"
+echo "Mengompresi gambar ke $ZIP_FILE..."
+zip -r "$ZIP_FILE" "$IMAGE_DIR"/*
+
+# 2. Kosongkan folder captured_images setelah backup
+echo "Mengosongkan folder captured_images..."
+rm -rf "$IMAGE_DIR"/*
+
+# 3. Ekspor data PostgreSQL ke file JSON
+EXPORT_FILE="$BACKUP_DIR_DB/analysis_backup_$DATE.json"
+echo "Mengekspor data dari PostgreSQL ke $EXPORT_FILE..."
+psql -U $DB_USER -d $DB_NAME -t -A -F"," -c "SELECT row_to_json(t) FROM (SELECT * FROM analysis_results) t;" > "$EXPORT_FILE"
+
+# 4. Kosongkan tabel analysis_results di PostgreSQL
+echo "Mengosongkan tabel analysis_results..."
+psql -U $DB_USER -d $DB_NAME -c "TRUNCATE TABLE analysis_results RESTART IDENTITY;"
+
+echo "Proses backup dan reset selesai."
+
+/usr/local/bin/backup-tb.sh
+
+# Reload systemd untuk mengenali service baru
+sudo systemctl daemon-reload
+
+# Aktifkan service
+sudo systemctl enable backup_aiot.service
+
+# Aktifkan timer untuk eksekusi otomatis
+sudo systemctl enable backup_aiot.timer
+sudo systemctl start backup_aiot.timer

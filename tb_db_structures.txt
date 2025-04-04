@@ -1,0 +1,23 @@
+CREATE TABLE ml_results (
+    id SERIAL PRIMARY KEY,
+    image_name TEXT UNIQUE NOT NULL,
+    people_count INT,
+    dominant_emotion TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE ml_results (
+	id SERIAL PRIMARY KEY,
+	image_name TEXT UNIQUE NOT NULL,
+	people_count INT NOT NULL,
+	dominant_emotion TEXT NOT NULL,
+	created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP );
+
+CREATE TABLE ml_results_days (
+	id SERIAL PRIMARY KEY,
+	date INT NOT NULL,
+	month INT NOT NULL,
+	hour INT NOT NULL,
+	year INT NOT NULL,
+	people_count INT NOT NULL,
+	dominant_emotion TEXT NOT NULL,
