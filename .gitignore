@@ -1,5 +1,7 @@
-# ignore all .a files
+# ignore all .txt files
 *.txt
 
-# but do track lib.a, even though you're ignoring .a files above
+# but do track requirements.txt, even though you're ignoring .a files above
 !requirements.txt
+
+dashboard/emoticon
